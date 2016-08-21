@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{part} | {title}</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="index,follow,noodp,noydir" />
+	<meta name="application-name" content="{title}" />
+	<meta property="og:title" content="{part} | {title}" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="{title}" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link href="{style}" rel="stylesheet" type="text/css">
+	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	{scripts}
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div id="main" class="container-fluid">
+		<header>
+			<h2><a href="index.php">{title}</a></h2>
+		</header>
+		<nav class="navbar navbar-inverse navbar-static-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="index.php">首頁</a>
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div id="nav-collapse" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						{nav}
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-9">
+				{content}
+				</div>
+				<aside id="sidebar" class="col-md-3">
+				{sidebar}
+				</aside>
+			</div>
+		</div>
+		<footer>
+			Copyright © <?php echo date('Y'); ?> by {title}<br>
+			榮耀的採用 <a href="http://blog.gdsecret.net" target="_black">Secret Blog</a>！
+		</footer>
+	</div>
+</body>
+</html>

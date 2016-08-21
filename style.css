@@ -1,0 +1,218 @@
+body{
+	background-color: rgb(240, 240, 240);
+	font-size:15.2px;
+	line-height:1.65em;
+}
+li{
+	line-height:1.8em;
+}
+footer{
+	margin-top:5em;
+	font-size:88%;
+	text-align:center;
+	border-top:5px solid rgb(0, 0, 0);
+	padding-top:1em;
+	clear:both;
+}
+#main{
+	/*width:980px;*/
+	width:80%;
+	min-width:270px;
+	max-width:1440px;
+	margin:0 auto;
+	padding:15px;
+	background-color: rgba(255, 255, 255,0.8);
+}
+header{
+	width:100% !important;
+	margin:0 auto !important;
+}
+header h2{
+	margin-left:1em;
+}
+nav{
+	margin:0 -15px 2em -15px;
+}
+nav .navbar-nav{
+	font-size:98%;
+}
+#sidebar .form-inline{
+	margin-bottom:1em;
+}
+#sidebar .panel-title{
+	text-align:center;
+	font-weight:bold;
+}
+#more_post{
+	margin-top:3em;
+}
+.post{
+	margin-left:-1.2em;
+	padding:0 0 3.5em 1em;
+	word-wrap: break-word;
+}
+.post+.post{
+	margin-top:5em;
+}
+.post .content{
+	min-height:60px;
+	padding:0.2em 0 0.5em 0;
+}
+.post_list{
+    transition: border 0.2s linear 0s;
+	border-left:2px solid rgba(200,200,200,0.6);
+}
+.post_list:hover{
+    transition: border 0.2s linear 0s;
+	border-left:2px solid orange;
+}
+.post h1{
+	font-size:150%;
+}
+.post h2{
+	font-size:130%;
+}
+.post h3{
+	font-size:110%;
+}
+.post_title{
+	font-size:170% !important;
+	line-height:1.65em;
+	text-shadow: 0px 2px 1px rgb(204, 204, 204);
+	margin:0 -0.25em 0.25em -0.25em;
+}
+.post_title a {
+    color: rgb(0, 0, 0);
+	transition: color 0.2s linear 0s;
+}
+.post_title a:hover {
+    color: rgb(255, 75, 51);
+    transition: color 0.2s linear 0s;
+    text-shadow: 0px 0px 0px;
+}
+.post .list-inline{
+	margin:1em 0 -3em -0.5em;
+	color: rgb(80, 80, 80);
+	background-color:rgb(230,230,230);
+	padding:0.5em;
+	text-align:center;
+}
+.post .list-inline li{
+	padding:0 12px 0 12px;
+}
+.post p{
+	margin:1.5em 0 1.5em 0;
+}
+.post img{
+	height: auto !important;
+    max-width: 95%;
+	box-shadow: 2px 2px 5px rgb(170,170,170);
+	margin-top:0.25em;
+}
+.post pre,.prettyprint.linenums.prettyprinted{
+	line-height:1.65em;
+	padding:0.5em !important;
+	margin:0.25em;
+	background-color: rgb(250, 250, 250);
+	border:1px solid rgb(230, 230, 230);
+}
+.more-link{
+	text-align:right;
+	padding:0;
+	margin:0 0 -10px 0 !important;
+}
+.form-sm{
+	max-width:600px;
+}
+.form-xs{
+	max-width:400px;
+}
+#filemanager .modal-body{
+	min-height:200px;
+}
+#uploader input[type="file"]{
+	display:inline-block;
+}
+#uploader #drop{
+	width:90%;
+	border: 3px dotted gray;
+	padding:100px 0 100px 0;
+	margin:15px auto;
+	font-size:120%;
+	text-align: center;
+}
+#uploader .item{
+	margin:2em 0 2em 0;
+	font-size:84%;
+}
+#uploader .active{
+	border-color: orange !important;
+	background-color:rgb(240,240,255) !important;
+}
+
+/*覆蓋BS 3的CSS 開始*/
+.form-control{
+	padding:4px 6px;
+	height:31px;
+	margin-bottom:1.5px;
+	margin-top:1.5px;
+}
+.input-group .form-control{
+	height:34px;
+	margin:0;
+}
+@media screen and (min-width:768px){
+	nav.navbar{
+		min-height:40px;
+	}
+	nav.navbar .navbar-nav > li > a{
+		padding-top:12px;
+		padding-bottom:12px;
+	}
+	nav.navbar .navbar-brand{
+		padding:12px;
+		height:100%;
+		font-size:100%;
+	}
+	nav.navbar .dropdown-menu > li > a{
+		font-size:15px;
+	}
+	nav.navbar .dropdown-menu > li > a:hover {
+		color:white;
+		background-color:rgb(0, 136, 204);
+	}
+}
+/*覆蓋BS 3的CSS 結束*/
+
+@media screen and (max-width:768px){
+	#main{
+		width:100%;
+		-moz-box-sizing:border-box;
+		-webkit-box-sizing:border-box;
+		box-sizing:border-box;
+	}
+	.post_list{
+		border-left:none;
+	}
+	.post_list+.post_list{
+		padding-top:5em;
+		border-top:2px solid rgba(200,200,200,0.6);
+	}
+	.post_list:hover{
+		border-left:none;
+	}
+	.post{
+		margin-left:-1.5em;
+		margin-right:-1.25em;
+		padding-left:0.75em;
+	}
+	#sidebar{
+		margin-top:5em;
+	}
+	.navbar-nav > li{
+		width:50% !important;
+		display:inline-block;
+		float:left;
+		text-align:center;
+	}
+}

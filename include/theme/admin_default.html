@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{part} | {title}</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="noindex,nofollow,noodp,noydir">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link href="{style}" rel="stylesheet" type="text/css">
+	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	{scripts}
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<?php if(isset($_SESSION['Blog_Username'])){ ?><script>
+	$(function(){
+		$.ajax({
+			url: '//blog.gdsecret.net/update.php?json&ver=<?php echo sb_ver() .'&url='.sb_get_headurl(); ?>',
+			dataType: 'jsonp',
+			success: function(data){
+				if(!data.error){
+					if(!data.latest){
+						$('nav').after('<div id="update" class="alert alert-danger text-center"></div>');
+						$('#update').html(data.msg);
+					}
+					else {
+						$('footer').attr('title',data.msg);
+					}
+				}
+				else {
+					$('nav').after('<div id="update" class="alert alert-danger"></div>');
+					$('#update').html(data.msg);
+				}
+			}
+		});
+	});
+	</script><?php } ?>
+</head>
+<body>
+	<div id="main" class="container-fluid">
+		<header>
+			<h2>{title}</h2>
+		</header>
+		<nav class="navbar navbar-inverse navbar-static-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="../index.php">返回部落格</a>
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div id="nav-collapse" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						{nav}
+					</ul>
+				</div>
+			</div>
+		</nav>
+		{content}
+		<footer>
+			Copyright © <?php echo date('Y'); ?> by {title}<br>
+			榮耀的採用 <a href="//blog.gdsecret.net" target="_black">Secret Blog</a>！
+		</footer>
+	</div>
+</body>
+</html>
