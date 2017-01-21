@@ -30,16 +30,16 @@
 -----
 本專案所引用的其他開放原始碼軟體：
 
->CKEditor v4.5.10
+>CKEditor v4.6.2
 授權：LGPL v2.1+  
 官方網站：http://ckeditor.com/
 
 
->Bootstrap v3.3.6
+>Bootstrap v3.3.7
 授權：MIT License  
 官方網站：http://getbootstrap.com/
 
 
->jQuery File Upload v9.12.5
+>jQuery File Upload v9.14.2
 授權：MIT License  
 官方網站：https://blueimp.github.io/jQuery-File-Upload/
