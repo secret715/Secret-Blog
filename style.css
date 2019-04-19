@@ -14,15 +14,6 @@ footer{
 	padding-top:1em;
 	clear:both;
 }
-#main{
-	/*width:980px;*/
-	width:80%;
-	min-width:270px;
-	max-width:1440px;
-	margin:0 auto;
-	padding:15px;
-	background-color: rgba(255, 255, 255,0.8);
-}
 header{
 	width:100% !important;
 	margin:0 auto !important;
@@ -36,6 +27,17 @@ nav{
 nav .navbar-nav{
 	font-size:98%;
 }
+#main{
+	width:80%;
+	min-width:270px;
+	max-width:1440px;
+	margin:0 auto;
+	padding:15px;
+	background-color: rgba(255, 255, 255,0.8);
+}
+#main > .row.content{
+	min-height:calc(100vh - 19.4em);
+}
 #sidebar .form-inline{
 	margin-bottom:1em;
 }
@@ -47,8 +49,6 @@ nav .navbar-nav{
 	margin-top:3em;
 }
 .post{
-	margin-left:-1.2em;
-	padding:0 0 3.5em 1em;
 	word-wrap: break-word;
 }
 .post+.post{
@@ -57,14 +57,6 @@ nav .navbar-nav{
 .post .content{
 	min-height:60px;
 	padding:0.2em 0 0.5em 0;
-}
-.post_list{
-    transition: border 0.2s linear 0s;
-	border-left:2px solid rgba(200,200,200,0.6);
-}
-.post_list:hover{
-    transition: border 0.2s linear 0s;
-	border-left:2px solid orange;
 }
 .post h1{
 	font-size:150%;
@@ -79,7 +71,7 @@ nav .navbar-nav{
 	font-size:170% !important;
 	line-height:1.65em;
 	text-shadow: 0px 2px 1px rgb(204, 204, 204);
-	margin:0 -0.25em 0.25em -0.25em;
+	margin-top:0;
 }
 .post_title a {
     color: rgb(0, 0, 0);
@@ -91,11 +83,11 @@ nav .navbar-nav{
     text-shadow: 0px 0px 0px;
 }
 .post .list-inline{
-	margin:1em 0 -3em -0.5em;
 	color: rgb(80, 80, 80);
 	background-color:rgb(230,230,230);
 	padding:0.5em;
 	text-align:center;
+	margin:0;
 }
 .post .list-inline li{
 	padding:0 12px 0 12px;
@@ -107,7 +99,8 @@ nav .navbar-nav{
 	height: auto !important;
     max-width: 95%;
 	box-shadow: 2px 2px 5px rgb(170,170,170);
-	margin-top:0.25em;
+	margin-top:0.5em;
+	margin-bottom:1.2em;
 }
 .post pre,.prettyprint.linenums.prettyprinted{
 	line-height:1.65em;
@@ -118,8 +111,6 @@ nav .navbar-nav{
 }
 .more-link{
 	text-align:right;
-	padding:0;
-	margin:0 0 -10px 0 !important;
 }
 .form-sm{
 	max-width:600px;
@@ -151,16 +142,6 @@ nav .navbar-nav{
 }
 
 /*覆蓋BS 3的CSS 開始*/
-.form-control{
-	padding:4px 6px;
-	height:31px;
-	margin-bottom:1.5px;
-	margin-top:1.5px;
-}
-.input-group .form-control{
-	height:34px;
-	margin:0;
-}
 @media screen and (min-width:768px){
 	nav.navbar{
 		min-height:40px;
@@ -200,11 +181,6 @@ nav .navbar-nav{
 	}
 	.post_list:hover{
 		border-left:none;
-	}
-	.post{
-		margin-left:-1.5em;
-		margin-right:-1.25em;
-		padding-left:0.75em;
 	}
 	#sidebar{
 		margin-top:5em;

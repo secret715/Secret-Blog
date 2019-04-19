@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 */
 
 function sb_ver(){
-	return '2.0.1';
+	return '2.1';
 }
 function sb_login($_username,$_password){
 	global $SQL;
@@ -65,8 +65,9 @@ function sb_login($_username,$_password){
 			
 			$_SESSION['Blog_Username'] = $_username;
 			$_SESSION['Blog_Id'] = $info['id'];
-			$_SESSION['Blog_UserGroup'] = $info['level'];	      
-			setcookie("login", time(), time()+10800);
+			$_SESSION['Blog_UserGroup'] = $info['level'];
+			$_SESSION['Blog_Auth'] = substr(sb_keygen(),0,5);	      
+			setcookie("login", time(), time()+86400);
 			return 1;
 		}
 		else {
@@ -78,10 +79,12 @@ function sb_loginout(){
 	$_SESSION['Blog_Username'] = NULL;
 	$_SESSION['Blog_Id'] = NULL;
 	$_SESSION['Blog_UserGroup'] = NULL;
+	$_SESSION['Blog_Auth'] = NULL;
 	unset($_SESSION['Blog_Username']);
 	unset($_SESSION['Blog_Id']);
 	unset($_SESSION['Blog_UserGroup']);
-	setcookie("login", "", time()-10800);
+	unset($_SESSION['Blog_Auth']);
+	setcookie("login", "", time()-60);
 	return 1;
 }
 
@@ -97,7 +100,7 @@ function sb_get_result($_query,$_value=array()){
 	}
 }
 function sb_post_public_array(){
-	return array('私密','公開','草稿');
+	return array('私密','公開','草稿','限已登入會員');
 }
 function sb_post_public($_public){
 	$_array=sb_post_public_array();
@@ -113,7 +116,7 @@ function sb_post_public($_public){
 			$_return.='warning">'.$_array[2];
 			break;
 		default:
-			$_return.='success">'.$_array[1];
+			$_return.='info">'.$_array[$_public];
 	}
 	$_return.= '</span>';
 	return $_return;
@@ -157,6 +160,11 @@ function sb_get_headurl(){
 		if($_SERVER['HTTPS'] == 'on'){
 			$_prefix='https';
 		}
+	}elseif(isset($_SERVER['HTTP_CF_VISITOR'])){
+		$_cf_visitor = json_decode($_SERVER['HTTP_CF_VISITOR']);
+		if (isset($_cf_visitor->scheme) && $_cf_visitor->scheme == 'https') {
+		  $_prefix='https';
+		}
 	}
 	$url="$_prefix://{$_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}";
 	$po= strripos($url,'/');
@@ -164,7 +172,7 @@ function sb_get_headurl(){
 }
 
 function sb_keygen($_value=''){
-	return str_shuffle(base64_encode(time()).md5(mt_rand().$_value.uniqid()));
+	return str_shuffle(str_replace('=','',base64_encode(time()).md5(mt_rand().$_value.uniqid())));
 }
 
 function sb_post_gist($_content,$_split,$_html=true,$_newline=true){
@@ -266,4 +274,95 @@ function sb_size($_size){
 	}else{
 		return $_sign.round($_size/1000/1000/1000/1000/1000,2) .' PB';
 	}
+}
+
+function sb_img_compress($_image,$_image_type,$_new_image_file,$_new_height,$_new_image_quality=75){
+	switch ($_image_type){
+		case 'jpg':
+		case 'jpeg':
+			$_origin_img = imagecreatefromjpeg($_image);
+			//判斷轉向
+			if(function_exists('exif_read_data')){
+			$_exif = exif_read_data($_image);
+				if(!empty($_exif['Orientation'])) {
+					switch($_exif['Orientation']) {
+						case 8:
+							$_origin_img = imagerotate($_origin_img,90,0);
+							break;
+						case 3:
+							$_origin_img = imagerotate($_origin_img,180,0);
+							break;
+						case 6:
+							$_origin_img = imagerotate($_origin_img,-90,0);
+							break;
+					}
+				}
+			}
+			break;
+		case 'png':
+			$_origin_img = imagecreatefrompng($_image);
+			break;
+		case 'gif':
+			$_origin_img = imagecreatefromgif($_image);
+			break;
+		default:
+			return false;
+	}
+	
+	
+	$_origin_width = imagesx($_origin_img);
+	$_origin_height = imagesy($_origin_img);
+
+	if($_origin_height>$_new_height){
+		$_new_width=intval($_origin_width / $_origin_height * $_new_height);
+
+		//建立新的圖
+		$_new_image = imagecreatetruecolor($_new_width, $_new_height);
+
+		//將原始照片縮小並複製到新的圖中
+		//imagecopyresized($_new_image, $_origin_img, 0, 0, 0, 0, $_new_width, $_new_height, $_origin_width, $_origin_height);
+		imagecopyresampled($_new_image, $_origin_img, 0, 0, 0, 0, $_new_width, $_new_height, $_origin_width, $_origin_height);
+	
+		imagejpeg($_new_image, $_new_image_file, $_new_image_quality);//輸出JPG圖片
+		return true;
+	
+	}else{
+		imagejpeg($_origin_img, $_new_image_file, $_new_image_quality);//輸出JPG圖片
+		return true;
+	}
+}
+
+function sb_captcha($_length=6,$_type=2){
+	// type 為驗證碼字串的形式(是否包含英文數字...)
+	$_text[0]=array(0,1,2,3,4,5,6,7,8,9);//純數字
+	$_text[1]=array('a','b','c','d','e','f','g','h','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');//純英文
+	$_text[2]=array('a','b','c','d','e','f','g','h','j','k','m','n','p','q','r','s','t','u','v','w','x','y','z',2,3,4,5,6,7,8,9);//英文+數字(去除 L 、 1 、 O 跟 0)
+	
+	if($_length<=0||!isset($_text[$_type]))return false;
+	
+	
+	$_array = $_text[$_type];
+	
+	$_captcha = '';
+	for($_i = 0; $_i < $_length; $_i++){
+		$_captcha .= $_array[mt_rand(0, count($_array) - 1)];
+	}
+	
+	$_captcha = strtoupper($_captcha);
+    $_SESSION['captcha'] = $_captcha;
+}
+
+
+
+function sb_log($_value,$_file='error.php'){
+	if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+		$_ip=$_SERVER['HTTP_CLIENT_IP'];
+	}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+		$_ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+	}else{
+		$_ip=$_SERVER['REMOTE_ADDR'];
+	}
+	
+	$_log=vsprintf('[%s][%s] %s',array($_ip,date('Y-m-d H:i:s'),$_value));
+	file_put_contents($_file,$_log."\n",FILE_APPEND);
 }

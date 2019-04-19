@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,7 @@ if(!isset($_SESSION['Blog_Username']) or $_SESSION['Blog_UserGroup']<9){
 	exit;
 }
 
-if(isset($_POST['username']) && isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+if(isset($_POST['username']) && isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) && isset($_GET[$_SESSION['Blog_Auth']])){
 	$_POST['username']=strtolower($_POST['username']);
 	$auth=sb_get_result("SELECT COUNT(*) FROM `member` WHERE `username`='%s'",array($_POST['username']));
 	if(implode('',$auth['row'])==0){
@@ -69,7 +69,7 @@ if(isset($_save)){
 <div class="page-header">
 	<h2>新增帳號</h2>
 </div>
-<form class="form-horizontal form-sm" action="newaccount.php" method="POST">
+<form class="form-horizontal form-sm" action="newaccount.php?<?php echo $_SESSION['Blog_Auth']; ?>" method="POST">
 	<div class="form-group">
 		<label class="col-sm-3 control-label">帳號：</label>
 		<div class="col-sm-6">

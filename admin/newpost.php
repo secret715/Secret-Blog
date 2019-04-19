@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -43,10 +43,10 @@ if(!isset($_SESSION['Blog_Username'])){
 	exit;
 }
 
-if(isset($_POST['title']) && isset($_POST['content']) && trim($_POST['title'])!='' && trim($_POST['content'])!=''){
+if(isset($_POST['title']) && isset($_POST['content']) && isset($_POST['public']) && isset($_POST['comment']) && isset($_POST['class']) && isset($_GET[$_SESSION['Blog_Auth']]) && trim($_POST['title'])!='' && trim($_POST['content'])!=''){
 	$keyword=implode(',',$_POST['keyword']);
 	
-	$SQL->query("INSERT INTO `post` (`title`, `content`, `type`, `public`, `class`, `keyword`, `mktime`, `author`) VALUES ('%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s')",array(htmlspecialchars($_POST['title']),$_POST['content'],0,$_POST['public'],$_POST['class'],htmlspecialchars(trim($keyword,',')),date('Y-m-d H:i:s'),$_SESSION['Blog_Id']));
+	$SQL->query("INSERT INTO `post` (`title`, `content`, `type`, `public`, `comment`, `class`, `keyword`, `mktime`, `update_time`, `author`) VALUES ('%s', '%s', '%d', '%d', '%d', '%d', '%s', '%s', now(), '%d')",array(htmlspecialchars($_POST['title']),$_POST['content'],0,$_POST['public'],$_POST['comment'],$_POST['class'],htmlspecialchars(trim($keyword,',')),date('Y-m-d H:i:s'),$_SESSION['Blog_Id']));
 	header('Location: post.php?newpost');
 }
 
@@ -60,7 +60,7 @@ $view->addScript('../include/js/ckeditor/ckeditor.js');
 	新增成功！
 </div>
 <?php } ?>
-<form action="newpost.php" method="POST">
+<form action="newpost.php?<?php echo $_SESSION['Blog_Auth']; ?>" method="POST">
 	<div class="row">
 		<div class="col-md-9">
 			<fieldset>
@@ -91,6 +91,12 @@ $view->addScript('../include/js/ckeditor/ckeditor.js');
 					?>
 						<option value="<?php echo $i; ?>"><?php echo $_public[$i]; ?></option>
 					<?php } ?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="comment">討論：</label>
+					<select class="form-control" name="comment">
+						<option value="0" selected="selected">關閉</option>
 					</select>
 				</div>
 				<div class="form-group">

@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -45,23 +45,34 @@ if(!isset($_SESSION['Blog_Username']) or $_SESSION['Blog_UserGroup']<5){
 
 if(!isset($_GET['id'])or trim($_GET['id'])==''){
 	header('Location: index.php');
+	exit;
 }
 
-if(isset($_POST['title']) && isset($_POST['content']) && trim($_POST['title'])!='' && trim($_POST['content'])!=''){
+if(isset($_POST['title']) && isset($_POST['content']) && trim($_POST['title'])!='' && trim($_POST['content'])!='' && isset($_GET[$_SESSION['Blog_Auth']]) && trim($_POST['keyword']['0'])!='' && trim($_POST['title'])!='' && trim($_POST['content'])!=''){
 
 	$keyword=implode(',',$_POST['keyword']);
 	
-	$SQL->query("UPDATE `post` SET `title`='%s', `content`='%s', `public`='%d', `keyword`='%s' WHERE `id`='%d'",array(htmlspecialchars($_POST['title']),$_POST['content'],$_POST['public'],htmlspecialchars(trim($keyword,',')),abs($_GET['id'])));
+	$SQL->query("UPDATE `post` SET `title`='%s', `content`='%s', `public`='%d', `keyword`='%s', `update_time`=now() WHERE `id`='%d'",array(htmlspecialchars($_POST['title']),$_POST['content'],$_POST['public'],htmlspecialchars(trim($keyword,',')),abs($_GET['id'])));
+	
+	unset($_SESSION['autosave'][intval($_GET['id'])]);
 	$_ok=true;
 }
 
 
 $page=sb_get_result("SELECT * FROM `post` WHERE `id`='%d' AND `type`=1",array(abs($_GET['id'])));
 
+if(isset($_SESSION['autosave'][$page['row']['id']])){
+	$data=json_decode($_SESSION['autosave'][$page['row']['id']]);
+	$page['row']['content']=$data[1];
+	unset($_SESSION['autosave'][$page['row']['id']]);
+	$_autosave=true;
+}
+
 $keyword=explode(',',$page['row']['keyword']);
 
 if($page['num_rows']<1){
 	header('Location: page.php');
+	exit;
 }
 
 $view = new View('theme/admin_default.html','admin/nav.php','',$blog['site_name'],'編輯頁面',true);
@@ -70,19 +81,33 @@ $view->addScript('../include/js/fileupload/jquery.ui.widget.js');
 $view->addScript('../include/js/fileupload/jquery.iframe-transport.js');
 $view->addScript('../include/js/fileupload/jquery.fileupload.js');
 $view->addScript('../include/js/upload.js');
+$view->addScript('../include/js/autosave.js');
 ?>
 <script>
 $(function(){
-	sb_filemanager(<?php echo $page['row']['id']; ?>);
-	sb_uploader(<?php echo $page['row']['id']; ?>,2000*1000);
+	var editor = CKEDITOR.replace('content');
+	sb_autosave(<?php echo $page['row']['id']?>);
+	sb_filemanager(<?php echo $page['row']['id']?>,'<?php echo $_SESSION['Blog_Auth']; ?>');
+	sb_uploader(<?php echo $page['row']['id']?>,10000*1000,'<?php echo $_SESSION['Blog_Auth']; ?>');
+	window.onbeforeunload = function(event) {
+	  event.returnValue = true;
+	}
+	$('form').submit(function(){
+		window.onbeforeunload = null;
+	});
+	$('.alert.alert-success').delay(1000).fadeOut(500);
 });
 </script>
 <?php if(isset($_ok)){ ?>
 <div class="alert alert-success">
 	修改成功！
 </div>
+<?php }elseif(isset($autosave)){ ?>
+<div class="alert alert-success">
+	已自動復原您編輯的內容！
+</div>
 <?php } ?>
-<form action="editpage.php?id=<?php echo $_GET['id']; ?>" method="POST">
+<form action="editpage.php?id=<?php echo $page['row']['id'].'&'.$_SESSION['Blog_Auth']; ?>" method="POST">
 	<div class="row">
 		<div class="col-md-9">
 			<fieldset>

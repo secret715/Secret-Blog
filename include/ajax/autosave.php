@@ -31,32 +31,23 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 <http://www.gnu.org/licenses/>.
 */
 
-set_include_path('../include/');
+set_include_path('../../include/');
 $includepath = true;
+require_once('../../Connections/SQL.php');
+require_once('../../config.php');
 
-require_once('../Connections/SQL.php');
-require_once('../config.php');
-require_once('view.php');
-
-if(!isset($_SESSION['Blog_Username']) or $_SESSION['Blog_UserGroup']<9){
-	header("Location: ../index.php");
-	exit;
-}
-
-if(isset($_GET['del'])){
-	file_put_contents('error.php','');
-}
-
-$view = new View('theme/admin_default.html','admin/nav.php','',$blog['site_name'],'安全',true);
-?>
-<div class="page-header">
-	<h2>安全</h2>
-</div>
-<?php if(filesize('error.php')>5){ ?>
-<p><a href="security.php?del">清空所有紀錄</a></p>
-<?php
-	echo nl2br(file_get_contents('error.php'));
+$_data=array();
+if(!isset($_SESSION['Blog_Username'])){
+	$_data['login']=false;
+	if(isset($_POST['data'])&&isset($_POST['p'])){
+		$_SESSION['autosave'][intval($_POST['p'])]=json_encode(array(time(),$_POST['data']));
+		$_data['save']=true;
+	}else{
+		$_data['save']=false;
+	}
 }else{
-	echo '沒有錯誤登入！';
+	$_data['login']=true;
+	$_data['save']=false;
 }
-$view->render(); ?>
+echo json_encode($_data);
+die;

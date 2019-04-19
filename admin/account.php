@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -53,8 +53,8 @@ if(isset($_GET['page'])){
 
 $all_member=sb_get_result("SELECT COUNT(*) FROM `member`");
 
-if(isset($_GET['del'])&& trim($_GET['del']) && implode('',$all_member['row'])>1 && $_GET['del']!=$_SESSION['Blog_Id']){
-	$SQL->query("DELETE FROM `member` WHERE `id`='%d'",array($_GET['del']));
+if(isset($_GET['del'])&& trim($_GET['del']) && implode('',$all_member['row'])>1 && $_GET['del']!=$_SESSION['Blog_Id'] && isset($_GET[$_SESSION['Blog_Auth']])){
+	$SQL->query("DELETE FROM `member` WHERE `id`='%d'",array(intval($_GET['del'])));
 	$_delok=true;
 }
 
@@ -97,7 +97,7 @@ if(isset($_delok)){
 			<td>
 			<a href="editaccount.php?id=<?php echo $member_list['row']['id']; ?>" class="btn btn-primary">編輯</a>&nbsp;
 			<?php if(implode('',$all_member['row'])>1 && $member_list['row']['id']!=$_SESSION['Blog_Id']){ ?>
-				<a href="account.php?del=<?php echo $member_list['row']['id']; ?>" class="btn btn-danger">刪除</a>
+				<a href="account.php?del=<?php echo $member_list['row']['id'].'&'.$_SESSION['Blog_Auth']; ?>" class="btn btn-danger">刪除</a>
 			<?php } ?>
 			</td>
 		</tr>

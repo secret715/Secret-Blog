@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{part} | {title}</title>
+	<title>{part} - {title}</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex,nofollow,noodp,noydir">
@@ -57,7 +57,9 @@
 				</div>
 			</div>
 		</nav>
-		{content}
+		<div style="min-height:calc(100vh - 22em);">
+			{content}
+		</div>
 		<footer>
 			Copyright © <?php echo date('Y'); ?> by {title}<br>
 			榮耀的採用 <a href="//blog.gdsecret.net" target="_black">Secret Blog</a>！

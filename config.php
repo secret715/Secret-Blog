@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -42,10 +42,6 @@ date_default_timezone_set("Asia/Taipei"); //時區設定
 $blog['site_name'] = 'Secret Blog'; //網站名稱
 $blog['keyword']='Secret Blog';//網站關鍵字  以 , 區隔  不可超過 10個
 $blog['url_rewrite']='0';//是否啟用網址重寫功能(需修改.htaccess)
-$blog['description']='Secret Blog';//網站簡介  最多 150 個字
+$blog['description']='';//網站簡介  最多 150 個字
 $blog['list']['limit']='10';//首頁顯示文章數量
-$blog['disqus']=
-<<<DISQUS
-Disqus程式碼
-DISQUS;
-//DISQUS程式碼放置區
+$blog['post']['compress'] = '1';//文章圖片是否開啟壓縮，0為關閉，1為開啟

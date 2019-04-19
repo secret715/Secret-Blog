@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -43,17 +43,17 @@ if(!isset($_SESSION['Blog_Username'])){
 	exit;
 }
 
-if(isset($_GET['del'])&& trim($_GET['del'])){
+if(isset($_GET['del'])&& trim($_GET['del']) && isset($_GET[$_SESSION['Blog_Auth']])){
 
 	$SQL->query("DELETE FROM `class` WHERE `id`='%d'",array($_GET['del']));
 	$_delok=true;
 	
-}elseif(isset($_POST['class']) && trim($_POST['class'])!=''){
+}elseif(isset($_POST['class']) && trim($_POST['class'])!='' && isset($_GET[$_SESSION['Blog_Auth']])){
 
 	$SQL->query("INSERT INTO `class` (`classname`,`mktime`) VALUES ('%s',now())",array(htmlspecialchars($_POST['class'])));
 	$_new=true;
 	
-}elseif(isset($_GET['edit']) && trim($_GET['edit'])!=''){
+}elseif(isset($_GET['edit']) && trim($_GET['edit'])!='' && isset($_GET[$_SESSION['Blog_Auth']])){
 	$edit=sb_get_result("SELECT * FROM `class` WHERE `id`='%d'",array(abs($_GET['edit'])));
 	if($edit['num_rows']>0){
 		$SQL->query("UPDATE `class` SET `classname`='%s' WHERE `id`='%d'",array(htmlspecialchars($_POST['edit']),$edit['row']['id']));
@@ -63,9 +63,10 @@ if(isset($_GET['del'])&& trim($_GET['del'])){
 
 
 if(isset($_GET['id'])&& trim($_GET['id'])!=''){
-	$class=sb_get_result("SELECT * FROM `class` WHERE `id`=%d",array(abs($_GET['id'])));
+	$class=sb_get_result("SELECT * FROM `class` WHERE `id`='%d'",array(intval($_GET['id'])));
 	if($class['num_rows']<1){
 		header("Location: class.php");
+		exit;
 	}
 }
 
@@ -100,7 +101,7 @@ if(isset($_delok)){
 </div>
 <div class="row" style="margin-bottom:2em;">
 	<div class="col-md-5">
-		<form class="form-inline" action="class.php" method="POST">
+		<form class="form-inline" action="class.php?<?php echo $_SESSION['Blog_Auth']; ?>" method="POST">
 		<legend>新增分類</legend>
 			<div class="form-group">
 				<input class="form-control" name="class" type="text" placeholder="名稱" required="required">
@@ -110,7 +111,7 @@ if(isset($_delok)){
 	</div>
 	<div class="col-md-7">
 		<?php if(isset($class)){ ?>
-		<form class="form-inline" action="class.php?edit=<?php echo $_GET['id'];?>" method="POST">
+		<form class="form-inline" action="class.php?edit=<?php echo intval($_GET['id']).'&'.$_SESSION['Blog_Auth']; ?>" method="POST">
 		<legend>編輯分類</legend>
 			<div class="form-group">
 				<input class="form-control" name="edit" type="text" placeholder="名稱" value="<?php echo stripslashes($class['row']['classname']); ?>" required="required">
@@ -137,7 +138,7 @@ if(isset($_delok)){
 		<tr>
 			<td><?php echo $class_list['row']['classname']; ?></td>
 			<td><?php echo $post_count; ?></td>
-			<td><a href="class.php?id=<?php echo $class_list['row']['id']; ?>" class="btn btn-primary">編輯</a>&nbsp;<a href="class.php?del=<?php echo $class_list['row']['id']; ?>" class="btn btn-danger">刪除</a></td>
+			<td><a href="class.php?id=<?php echo $class_list['row']['id']; ?>" class="btn btn-primary">編輯</a>&nbsp;<a href="class.php?del=<?php echo $class_list['row']['id'].'&'.$_SESSION['Blog_Auth']; ?>" class="btn btn-danger">刪除</a></td>
 		</tr>
 	<?php
 	}while($class_list['row'] = $class_list['query']->fetch_assoc());

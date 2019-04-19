@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -54,7 +54,7 @@ if($member['num_rows']<1){
 	header("Location: index.php");
 }
 
-if(isset($_GET['id']) && isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+if(isset($_GET['id']) && isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) && isset($_GET[$_SESSION['Blog_Auth']])){
 	
 	if($_POST['password']==''){
 		$pass=$member['row']['password'];
@@ -83,7 +83,7 @@ if(isset($_save)){
 <div class="page-header">
 	<h2>編輯帳號</h2>
 </div>
-<form class="form-horizontal form-sm" action="editaccount.php?id=<?php echo $_BlogENV['id']; ?>" method="POST">
+<form class="form-horizontal form-sm" action="editaccount.php?id=<?php echo $_BlogENV['id'].'&'.$_SESSION['Blog_Auth']; ?>" method="POST">
 	<div class="form-group">
 		<label class="col-sm-3 control-label">帳號：</label>
 		<div class="col-sm-6">

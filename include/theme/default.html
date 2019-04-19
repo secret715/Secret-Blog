@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{part} | {title}</title>
+	<title>{part} - {title}</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="index,follow,noodp,noydir" />
@@ -38,15 +38,13 @@
 				</div>
 			</div>
 		</nav>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-9">
-				{content}
-				</div>
-				<aside id="sidebar" class="col-md-3">
-				{sidebar}
-				</aside>
+		<div class="row content">
+			<div class="col-md-9">
+			{content}
 			</div>
+			<aside id="sidebar" class="col-md-3">
+			{sidebar}
+			</aside>
 		</div>
 		<footer>
 			Copyright © <?php echo date('Y'); ?> by {title}<br>

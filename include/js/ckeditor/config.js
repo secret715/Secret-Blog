@@ -9,4 +9,5 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.uiColor = '#AADC6E';
 	config.width = '100%';
 	config.height = 400;
+	config.removeButtons = 'Save';
 };

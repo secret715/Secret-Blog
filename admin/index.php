@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -40,24 +40,33 @@ require_once('view.php');
 
 if((isset($_POST['username']))&&(isset($_POST['password']))&&($_POST['username']!='')&&($_POST['password']!='')){
 
-	if(strtoupper($_POST['captcha']) != strtoupper($_SESSION['captcha'])){
+	if(!isset($_POST['captcha'])||(strtoupper($_POST['captcha']) != strtoupper($_SESSION['captcha']))){
+		sb_captcha(6);
 		header("Location: index.php?captcha");
 		exit;
 	}
 	unset($_SESSION['captcha']);
+	
+	if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+		$ip=$_SERVER['HTTP_CLIENT_IP'];
+	}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+		$ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+	}else{
+		$ip=$_SERVER['REMOTE_ADDR'];
+	}
+	
 	if(sb_login($_POST['username'],$_POST['password'])==1){
-		header('Location: post.php');
+		$_value=sprintf('登入 %s 成功',$_POST['username']);
+		sb_log($_value);
+		if(isset($_GET['p'])){
+			header('Location: ../post.php?id='.intval($_GET['p']));
+		}else{
+			header('Location: post.php');
+		}
 		exit;
 	}else{
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
-			$ip=$_SERVER['HTTP_CLIENT_IP'];
-		}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-			$ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-		}else{
-			$ip=$_SERVER['REMOTE_ADDR'];
-		}
-		$_error=sprintf('%s 在 %s 嘗試登入 %s 失敗',$ip,date('Y-m-d H:i:s'),$_POST['username']);
-		file_put_contents('error.php',$_error."\n",FILE_APPEND);
+		$_value=sprintf('登入 %s 失敗',$_POST['username']);
+		sb_log($_value);
 		$_GET['no']=true;
 	}
 }elseif(isset($_GET['out'])){
@@ -80,7 +89,7 @@ $(function(){
 <div class="page-header">
 	<h2>登入</h2>
 </div>
-<form class="form-horizontal form-sm" action="index.php" method="POST">
+<form class="form-horizontal form-sm" action="index.php<?php if(isset($_GET['p']))echo '?p='.intval($_GET['p']); ?>" method="POST">
 	<div class="form-group">
 		<label class="col-sm-3 control-label" for="username">帳號：</label>
 		<div class="col-sm-6">

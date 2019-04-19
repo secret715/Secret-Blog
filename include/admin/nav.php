@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,6 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 			<li><a href="newpage.php">新增頁面</a></li>
 		</ul>
 	</li>
-	<li><a href="http://disqus.com/admin/" target="_blank">Disqus</a></li>
 	<?php } ?>
 	<li class="dropdown">
 		<a href="account.php" data-target="#" data-toggle="dropdown">帳號</a>
@@ -70,9 +69,12 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 		<a href="editconfig.php" data-target="#" data-toggle="dropdown">系統</a>
 		<ul class="dropdown-menu">
 			<li><a href="editconfig.php">設定</a></li>
+			<li><a href="sidebar.php">側邊欄</a></li>
 			<li><a href="security.php">安全</a></li>
 		</ul>
 	</li>
+	<?php }elseif($_SESSION['Blog_UserGroup']>=5){ ?>
+		<li><a href="sidebar.php">側邊欄</a></li>
 	<?php } ?>
 	<li><a href="index.php?out">登出</a></li>
 <?php } ?>

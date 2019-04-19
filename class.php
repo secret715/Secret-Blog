@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -39,18 +39,23 @@ if(!isset($_GET['id'])or trim($_GET['id'])==''){
 	header('Location: index.php');
 }
 
+$_public='1,3';
+if(isset($_SESSION['Blog_Username'])){
+	$_public='1,3';
+}
+
 if(isset($_GET['page'])){
 	$limit_start = abs(intval(($_GET['page']-1)*$blog['list']['limit']));
-	$post_list = sb_get_result("SELECT * FROM `post` WHERE `type` =0 AND `public`=1 AND `class`='%d' ORDER BY `mktime` DESC LIMIT %d,%d",array(abs($_GET['id']),$limit_start,$blog['list']['limit']));
+	$post_list = sb_get_result("SELECT * FROM `post` WHERE `type` =0 AND `public` IN ($_public) AND `class`='%d' ORDER BY `mktime` DESC LIMIT %d,%d",array(abs($_GET['id']),$limit_start,$blog['list']['limit']));
 } else {
 	$limit_start = 0;
-	$post_list=sb_get_result("SELECT * FROM `post` WHERE `type` =0 AND `public`=1 AND `class`='%d' ORDER BY `mktime` DESC LIMIT %d,%d",array(abs($_GET['id']),$limit_start,$blog['list']['limit']));
+	$post_list=sb_get_result("SELECT * FROM `post` WHERE `type` =0 AND `public` IN ($_public) AND `class`='%d' ORDER BY `mktime` DESC LIMIT %d,%d",array(abs($_GET['id']),$limit_start,$blog['list']['limit']));
 }//type 0 =文章  type 1= 頁面      public 1=公開   public 0=私密
 
 
 $class=sb_get_result("SELECT * FROM `class` WHERE `id` =%d",array(abs($_GET['id'])));
 
-$all_post=sb_get_result("SELECT COUNT(*) FROM `post` WHERE `type` =0 AND `public`=1 AND `class`='%d'",array(abs($_GET['id'])));
+$all_post=sb_get_result("SELECT COUNT(*) FROM `post` WHERE `type` =0 AND `public` IN ($_public) AND `class`='%d'",array(abs($_GET['id'])));
 
 $view = new View('include/theme/default.html','include/nav.php','include/sidebar.php',$blog['site_name'],$class['row']['classname']);
 ?>
@@ -65,10 +70,15 @@ if($post_list['num_rows']>0){
 	<div class="content">
 	<?php
 	$_gist=sb_post_gist($post_list['row']['content'],'<!--more-->');
-	if($_gist){
-		echo $_gist.'<p class="more-link"><a href="'.sb_post_url($post_list['row']['id'],'post',$blog['url_rewrite']).'" class="btn btn-primary"> 繼續閱讀 → </a></p>';
+	if($post_list['row']['public']==3&&!isset($_SESSION['Blog_Username'])){
+		echo '<div class="alert alert-danger"><a href="admin/?p='.$post_list['row']['id'].'">登入</a>後閱讀</div>';
 	}else{
-		echo stripslashes($post_list['row']['content']);
+		$_gist=sb_post_gist($post_list['row']['content'],'<!--more-->');
+		if($_gist){
+			echo $_gist.'<p class="more-link"><a href="'.sb_post_url($post_list['row']['id'],'post',$blog['url_rewrite']).'" class="btn btn-primary"> 繼續閱讀 → </a></p>';
+		}else{
+			echo stripslashes($post_list['row']['content']);
+		}
 	}
 	?>
 	</div>

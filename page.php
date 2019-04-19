@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -37,12 +37,29 @@ require_once('include/view.php');
 
 if(!isset($_GET['id'])or trim($_GET['id'])==''){
 	header('Location: index.php');
+	exit;
 }
 
-$page=sb_get_result("SELECT * FROM `post` WHERE `id`=%d AND `type`=1 AND `public`=1",array(abs($_GET['id'])));//type 0 =文章  type 1= 頁面      public 1=公開   public 0=私密
+$page=sb_get_result("SELECT * FROM `post` WHERE `id`='%d' AND `type`=1",array(abs($_GET['id'])));//type 0 =文章  type 1= 頁面      public 1=公開   public 0=私密
 
-if($page['num_rows']<1){
+switch ($page['row']['public']){
+	case 0:
+		unset($page['num_rows']);
+		break;
+	case 2:
+		unset($page['num_rows']);
+		break;
+	case 3:
+		if(!isset($_SESSION['Blog_Username'])){
+			unset($page['num_rows']);
+		}
+		break;
+}
+
+
+if(!isset($page['num_rows'])){
 	header('Location: index.php');
+	exit;
 }
 
 $author=sb_get_result("SELECT `nickname` FROM `member` WHERE `id`=%d",array($page['row']['author']));

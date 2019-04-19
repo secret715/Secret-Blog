@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ if(!isset($_SESSION['Blog_Username'])){
 	header("Location: ../../index.php");
 	exit;
 }
-if(isset($_GET['p']) && abs($_GET['p'])!=''){
+if(isset($_GET['p']) && abs($_GET['p'])!='' && isset($_GET[$_SESSION['Blog_Auth']])){
 	$_auth=sb_get_result("SELECT `type` FROM `post` WHERE `id`='%d'",array(abs($_GET['p'])));
 	if(($_auth['num_rows']<1) or ($_auth['row']['type']==1 && $_SESSION['Blog_UserGroup']<5)){
 		exit;
@@ -80,7 +80,7 @@ if(isset($_GET['p']) && abs($_GET['p'])!=''){
 				</td>
 				<td><?php echo sb_size(filesize($myfile)); ?></td>
 				<td><small><?php echo date('Y-m-d H:i',filemtime($myfile)); ?></small></td>
-				<td><span class="file_remove btn btn-danger btn-sm" data-url="<?php echo $_headurl; ?>include/ajax/upload.php?del=<?php echo $file; ?>&p=<?php echo abs($_GET['p']); ?>">刪除</span></td>
+				<td><span class="file_remove btn btn-danger btn-sm" data-url="del=<?php echo $file; ?>&p=<?php echo abs($_GET['p']).'&'.$_SESSION['Blog_Auth']; ?>">刪除</span></td>
 			</tr>
 		<?php
 			}
@@ -92,7 +92,7 @@ if(isset($_GET['p']) && abs($_GET['p'])!=''){
 		closedir($handle);
 		exit;
 	}elseif(isset($_GET['del']) && sb_namefilter(trim($_GET['del']))!=''){
-		@unlink($_dir.'/'.sb_namefilter($_GET['del']));
+		unlink($_dir.'/'.sb_namefilter($_GET['del']));
 		echo 1;
 		exit;
 	}
@@ -100,7 +100,7 @@ if(isset($_GET['p']) && abs($_GET['p'])!=''){
 	$_Input=@$_FILES['files'];
 
 	if(isset($_Input) && $_Input['error'] == 0 && $_GET['p'] && abs($_GET['p'])!=''){
-		$_max_upload_size = 2000;//單位為KB
+		$_max_upload_size = 10;//單位為MB
 		$_extend = pathinfo($_Input['name'], PATHINFO_EXTENSION);//文件副檔名
 		$_allow_ext=array('png','gif','jpg','zip','pdf','docx','pptx','xlsx','doc','ppt','xls','odt','odp','ods');
 		$_file_name=sb_namefilter(mb_substr(rtrim(strtr($_Input['name']," ","_"),'.'.$_extend),0,40,'utf-8')).'.'.$_extend;//檔案名稱
@@ -119,8 +119,8 @@ if(isset($_GET['p']) && abs($_GET['p'])!=''){
 			echo '{"status":"error","msg":"不允許此格式"}';
 			exit;
 		}
-		if($_max_upload_size <= $_Input['size']/1000){
-			echo '{"status":"error","msg":"超過檔案大小限制"}';
+		if($_max_upload_size*1000*1000 < $_Input['size']){
+			echo '{"status":"error","msg":"超過檔案大小限制(最高上限：'.$_max_upload_size.' MB)"}';
 			exit;
 		}
 		if(!is_dir("$_dir/")) {  //檢查資料夾是否存在
@@ -130,6 +130,16 @@ if(isset($_GET['p']) && abs($_GET['p'])!=''){
 			}
 		}
 		move_uploaded_file($_FILES['files']['tmp_name'],$_dir.'/'.$_file_name);
+		
+		if($blog['post']['compress']==true&&in_array($_extend,array('png','gif','jpg'))){
+			$_new_file_name=rtrim($_file_name,'.'.$_extend).'.jpg';
+			sb_img_compress($_dir.'/'.$_file_name,$_extend,$_dir.'/'.$_new_file_name,960,90);
+			if($_new_file_name!=$_file_name){
+				@unlink($_dir.'/'.$_file_name);
+			}
+			$_file_name=$_new_file_name;
+		}
+		
 		echo '{"status":"success","url":"'.$_headurl.'upload/'.abs($_GET['p']).'/'.$_file_name.'"}';
 	}else{
 		echo '{"status":"error","msg":"上傳失敗，錯誤代碼：'. $_Input['error'].'"}';

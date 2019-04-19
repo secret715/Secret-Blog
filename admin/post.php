@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,7 @@ if(!isset($_SESSION['Blog_Username'])){
 	exit;
 }
 
-if(isset($_GET['del'])&& trim($_GET['del'])){
+if(isset($_GET['del'])&& trim($_GET['del']) && isset($_GET[$_SESSION['Blog_Auth']])){
 	if($_SESSION['Blog_UserGroup']<5){
 		$SQL->query("DELETE FROM `post` WHERE `id`='%d' AND `author` = '%d'",array($_GET['del'],$_SESSION['Blog_Id']));
 	}else{
@@ -54,7 +54,7 @@ if(isset($_GET['del'])&& trim($_GET['del'])){
 }
 
 if(isset($_GET['page'])){
-	$limit_start = abs(intval(($_GET['page']-1)*20));
+	$limit_start = abs(intval(($_GET['page']-1)*30));
 } else {
 	$limit_start = 0;
 }
@@ -79,38 +79,51 @@ if(isset($_delok)){
 	新增成功！
 </div>
 <?php }if($post_list['num_rows']>0){ ?>
+<script>
+$(function(){
+	$('a.btn.btn-danger').click(function(e){
+		if(!window.confirm("確定刪除？")){
+			e.preventDefault();
+		}
+	});
+});
+</script>
 <div class="page-header">
 	<h2>文章</h2>
 </div>
-<table class="table table-striped table-bordered table-hover">
-	<thead>
-		<tr>
-			<th>標題</th>
-			<th>作者</th>
-			<th>分類</th>
-			<th>日期</th>
-			<th>管理</th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	do{
-		$class=sb_get_result("SELECT * FROM `class` WHERE `id` =%d",array($post_list['row']['class']));
-		$author=sb_get_result("SELECT `nickname` FROM `member` WHERE `id`=%d",array($post_list['row']['author']));
-	?>
-		<tr>
-			<td><?php echo $post_list['row']['title'].'&nbsp;&nbsp;&nbsp;'.sb_post_public($post_list['row']['public']); ?></td>
-			<td><?php echo $author['row']['nickname']; ?></td>
-			<td><?php echo $class['row']['classname']; ?></td>
-			<td><?php echo date('Y-m-d',strtotime($post_list['row']['mktime'])); ?></td>
-			<td><a href="editpost.php?id=<?php echo $post_list['row']['id']; ?>" class="btn btn-primary">編輯</a>&nbsp;<a href="post.php?del=<?php echo $post_list['row']['id']; ?>" class="btn btn-danger">刪除</a></td>
-		</tr>
-	<?php
-	}while($post_list['row'] = $post_list['query']->fetch_assoc());
-	?>
-	</tbody>
-</table>
-<?php echo sb_page_pagination('post.php',@$_GET['page'],implode('',$all_post['row']),20); ?>
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th width="60%">標題</th>
+				<th>作者</th>
+				<th>分類</th>
+				<th width="100">修改日期</th>
+				<th width="10">刪除</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+		do{
+			$class=sb_get_result("SELECT * FROM `class` WHERE `id` =%d",array($post_list['row']['class']));
+			$author=sb_get_result("SELECT `nickname` FROM `member` WHERE `id`=%d",array($post_list['row']['author']));
+		?>
+			<tr>
+				<td><a href="editpost.php?id=<?php echo $post_list['row']['id']; ?>"><?php echo $post_list['row']['title'].'</a>&nbsp;&nbsp;&nbsp;'.sb_post_public($post_list['row']['public']); ?></td>
+				<td><?php echo $author['row']['nickname']; ?></td>
+				<td><?php echo $class['row']['classname']; ?></td>
+				<td>
+					<small title="建立時間:<?php echo date('Y-m-d',strtotime($post_list['row']['mktime'])); ?>"><?php echo date('Y-m-d',strtotime($post_list['row']['update_time'])); ?></small>
+				</td>
+				<td><a href="post.php?del=<?php echo $post_list['row']['id'].'&'.$_SESSION['Blog_Auth']; ?>" class="btn btn-danger btn-xs">刪除</a></td>
+			</tr>
+		<?php
+		}while($post_list['row'] = $post_list['query']->fetch_assoc());
+		?>
+		</tbody>
+	</table>
+</div>
+<?php echo sb_page_pagination('post.php',@$_GET['page'],implode('',$all_post['row']),30); ?>
 <?php }else{ ?>
 <p class="text-center text-danger" style="font-size:150%;">沒有文章！</p>
 <?php } ?>

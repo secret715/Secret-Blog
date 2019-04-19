@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,7 @@ if(!isset($_SESSION['Blog_Username']) or $_SESSION['Blog_UserGroup']<9){
 	exit;
 }
 
-if(isset($_POST['site_name'])){
+if(isset($_POST['site_name'])&&isset($_POST['keyword'])&&isset($_POST['url_rewrite'])&&isset($_GET[$_SESSION['Blog_Auth']])){
 	$config='../config.php';
 	$config_sample='../config-sample.php';
 	
@@ -51,12 +51,12 @@ if(isset($_POST['site_name'])){
 	if(isset($_url_type[$_POST['url_rewrite']])){
 		if($_POST['url_rewrite']>0){
 			$_url_rewrite=$_POST['url_rewrite'];
-			$_rule='RewriteRule ^([A-Za-z]+)'.sprintf($_url_type[$_POST['url_rewrite']],'([0-9]+)').'$ $1.php?id=$2 [L]';		
+			$_rule='RewriteRule ^([A-Za-z]+)'.sprintf($_url_type[$_POST['url_rewrite']],'([0-9]+)').'$ $1.php?id=$2 [L]';
 $_new_htaccess='Options -Indexes
 # BEGIN mod_rewrite
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase '.str_replace('https://','',str_replace('http://','',str_replace($_SERVER['HTTP_HOST'],'',str_replace('/admin/','',sb_get_headurl())))).
+RewriteBase /'.str_replace('https://','',str_replace('http://','',str_replace($_SERVER['HTTP_HOST'],'',str_replace('/admin/','',sb_get_headurl())))).
 "\n".$_rule.'
 </IfModule>
 # END mod_rewrite';
@@ -68,13 +68,20 @@ RewriteBase '.str_replace('https://','',str_replace('http://','',str_replace($_S
 		$_url_rewrite=0;
 	}
 	
+	if(isset($_POST['compress'])){
+		$compress=1;
+	}else{
+		$compress=0;
+	}
+	
+	
 	$put_config = vsprintf(file_get_contents($config_sample),array(
 		addslashes(htmlspecialchars($_POST['site_name'])),
 		addslashes(htmlspecialchars($_POST['keyword'])),
 		abs($_POST['url_rewrite']),
 		addslashes($_POST['description']),
 		abs($_POST['list_limit']),
-		addslashes($_POST['disqus'])
+		$compress
 	));
 	file_put_contents($config,$put_config);
 	$_ok=true;
@@ -90,7 +97,7 @@ $view = new View('theme/admin_default.html','admin/nav.php','',$blog['site_name'
 <div class="page-header">
 	<h2>設定</h2>
 </div>
-<form class="form-horizontal" name="form1" method="POST" action="editconfig.php">
+<form class="form-horizontal" method="POST" action="editconfig.php?<?php echo $_SESSION['Blog_Auth']; ?>">
 	<fieldset>
 		<legend>主要</legend>
 		<div class="form-group">
@@ -148,13 +155,13 @@ $view = new View('theme/admin_default.html','admin/nav.php','',$blog['site_name'
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="disqus">DISQUS：</label>
+			<label class="col-sm-2 control-label" for="compress">圖片壓縮：</label>
 			<div class="col-sm-6">
-				<textarea class="form-control" name="disqus" type="text"><?php echo $blog['disqus']; ?></textarea>
+				<label class="checkbox-inline">
+					<input name="compress" type="checkbox" value="1"<?php if($blog['post']['compress']){echo ' checked="checked"';} ?>>開啟
+				</label>
 			</div>
-			<div class="col-sm-4 help-block">
-				DISQUS程式碼放置
-			</div>
+			<div class="col-sm-4"></div>
 		</div>
 	</fieldset>
 	<div class="form-group">

@@ -1,7 +1,7 @@
 <?php
 /*
 <Secret Blog>
-Copyright (C) 2012-2017 太陽部落格站長 Secret <http://gdsecret.com>
+Copyright (C) 2012-2019 Secret <http://gdsecret.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -44,8 +44,4 @@ $blog['keyword']='%s';//網站關鍵字  以 , 區隔  不可超過 10個
 $blog['url_rewrite']='%d';//是否啟用網址重寫功能(需修改.htaccess)
 $blog['description']='%s';//網站簡介  最多 150 個字
 $blog['list']['limit']='%d';//首頁顯示文章數量
-$blog['disqus']=
-<<<DISQUS
-%s
-DISQUS;
-//DISQUS程式碼放置區
+$blog['post']['compress'] = '%d';//文章圖片是否開啟壓縮，0為關閉，1為開啟
